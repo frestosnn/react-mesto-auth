@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.jsx';
 import { api } from '../utils/Api.js';
 import { Route, Routes, Navigate } from 'react-router-dom';
+import InfoTooltip from './InfoTooltip';
 
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
