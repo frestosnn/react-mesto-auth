@@ -7,9 +7,12 @@ import AddPlacePopup from './AddPlacePopup.jsx';
 import EditProfilePopup from './EditProfilePopup.jsx';
 import EditAvatarPopup from './EditAvatarPopup.jsx';
 import ImagePopup from './ImagePopup.jsx';
+import Login from './Login';
+import Register from './Register';
 import { useEffect, useState } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.jsx';
 import { api } from '../utils/Api.js';
+import { Route, Routes, Navigate } from 'react-router-dom';
 
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
@@ -17,6 +20,8 @@ function App() {
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
 
   const [currentUser, setCurrentUser] = useState({});
+
+  const [isLoggedIn, setLoggenIn] = useState(false);
 
   useEffect(() => {
     api
@@ -142,6 +147,15 @@ function App() {
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
+      <Routes>
+        <Route
+          path="/"
+          element={!isLoggedIn ? <Navigate to="/sign-in" replace /> : <Navigate to="/" replace />}
+        />
+        <Route path="/sign-up" element={<Register />}></Route>
+        <Route path="/sign-in" element={<Login />}></Route>
+      </Routes>
+
       <Header />
       <Main
         onEditProfile={handleEditProfileClick}
