@@ -2,25 +2,33 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import InfoTooltip from './InfoTooltip';
 import { useState } from 'react';
 import * as auth from '../utils/Auth.js';
+import signImagePath from '../images/sign-good.svg';
 
-function Register() {
+function Register({ isOpen, onClose, onChangeStatus }) {
+  const navigate = useNavigate();
   const [formValue, setFormValue] = useState({
-    password: '',
-    email: ''
+    email: '',
+    password: ''
   });
 
   const handleSubmit = e => {
     e.preventDefault();
 
     //деструктурируем стейт formValue
-    const { password, email } = formValue;
+    const { email, password } = formValue;
     console.log(password, email);
 
     //отправляем данные на сервер из formValue
-    auth.register(password, email);
+    auth.register(email, password).then(res => {
+      //если res существует
+      if (res) {
+        //то меняем стейт попапа на true
+        onChangeStatus();
+      }
+    });
 
-    //после регистрации направляем на страницу входа
-    <Navigate to="/sign-in" replace />;
+    /*//после регистрации направляем на страницу входа
+    navigate('/sign-in', { replace: true }); */
   };
 
   const handleChange = e => {
@@ -32,36 +40,45 @@ function Register() {
   };
 
   return (
-    <div className="sign">
-      <h2 className="sign__title">Регистрация</h2>
-      <form onSubmit={handleSubmit} className="sign__form">
-        <input
-          type="email"
-          className="sign__input"
-          placeholder="Email"
-          value={formValue.email}
-          onChange={handleChange}
-          name="email"
-        ></input>
+    <>
+      <InfoTooltip
+        isOpen={isOpen}
+        onClose={onClose}
+        text="Вы успешно зарегистрировались!"
+        src={signImagePath}
+      />
 
-        <input
-          type="text"
-          className="sign__input"
-          placeholder="Пароль"
-          value={formValue.password}
-          onChange={handleChange}
-          name="password"
-        ></input>
+      <div className="sign">
+        <h2 className="sign__title">Регистрация</h2>
+        <form onSubmit={handleSubmit} className="sign__form">
+          <input
+            type="email"
+            className="sign__input"
+            placeholder="Email"
+            value={formValue.email}
+            onChange={handleChange}
+            name="email"
+          ></input>
 
-        <button className="sign__button">Зарегистрироваться</button>
-      </form>
-      <p className="sign__span">
-        Уже зарегистрированы?{' '}
-        <Link to="/sign-in" className="sign__link">
-          Войти
-        </Link>
-      </p>
-    </div>
+          <input
+            type="text"
+            className="sign__input"
+            placeholder="Пароль"
+            value={formValue.password}
+            onChange={handleChange}
+            name="password"
+          ></input>
+
+          <button className="sign__button">Зарегистрироваться</button>
+        </form>
+        <p className="sign__span">
+          Уже зарегистрированы?{' '}
+          <Link to="/sign-in" className="sign__link">
+            Войти
+          </Link>
+        </p>
+      </div>
+    </>
   );
 }
 

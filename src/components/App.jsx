@@ -25,6 +25,12 @@ function App() {
 
   const [isLoggedIn, setLoggenIn] = useState(false);
 
+  const [isInfoTooltipPopupOpen, setInfoTooltipPopupOpen] = useState(false);
+
+  const handleChangeInfoTooltipStatus = () => {
+    setInfoTooltipPopupOpen(state => !state);
+  };
+
   useEffect(() => {
     api
       .getUserInfo()
@@ -54,6 +60,7 @@ function App() {
     setEditAvatarPopupOpen(false);
     setEditProfilePopupOpen(false);
     setAddPlacePopupOpen(false);
+    setInfoTooltipPopupOpen(false);
     setSelectedCard({ name: '', link: '' });
   };
 
@@ -165,7 +172,11 @@ function App() {
           element={
             <>
               <Header />
-              <Register />
+              <Register
+                isOpen={isInfoTooltipPopupOpen}
+                onClose={closeAllPopups}
+                onChangeStatus={handleChangeInfoTooltipStatus}
+              />
             </>
           }
         ></Route>

@@ -1,5 +1,13 @@
-function InfoTooltip() {
-  return <p>jd</p>;
+function InfoTooltip({ isOpen, onClose, text, src, name }) {
+  return (
+    <div className={`popup  ${isOpen ? 'popup_opened' : ''}`}>
+      <div className="popup__container popup__container_type_sign">
+        <button className="popup__button-close" onClick={onClose} type="button" />
+        <img className="popup__img-sign" src={src}></img>
+        <p className="popup__text">{text}</p>
+      </div>
+    </div>
+  );
 }
 
 export default InfoTooltip;
