@@ -9,6 +9,7 @@ function Header({ email, text }) {
   const signOut = () => {
     localStorage.removeItem('jwt');
     navigate('/sign-in', { replace: true });
+
     setSignIn(false);
   };
 

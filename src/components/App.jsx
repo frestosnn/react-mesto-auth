@@ -23,7 +23,7 @@ function App() {
 
   const [currentUser, setCurrentUser] = useState({});
 
-  const [isLoggedIn, setLoggenIn] = useState(false);
+  const [isLoggedIn, setLoggedIn] = useState(false);
 
   const [isInfoTooltipPopupOpen, setInfoTooltipPopupOpen] = useState(false);
 
@@ -37,7 +37,7 @@ function App() {
   };
 
   const handleLogin = () => {
-    setLoggenIn(true);
+    setLoggedIn(state => !state);
   };
 
   useEffect(() => {
@@ -66,7 +66,7 @@ function App() {
             };
 
             //поменяли стейт
-            setLoggenIn(true);
+            setLoggedIn(true);
 
             //изменили email
             setEmail(userData.email);
@@ -228,43 +228,41 @@ function App() {
         <Route
           path="/"
           element={
-            !isLoggedIn ? (
-              <Navigate to="/sign-in" replace />
-            ) : (
-              <>
-                <Header email={email} text={'Выйти'} />
-                <Main
-                  onEditProfile={handleEditProfileClick}
-                  onAddPlace={handleAddPlaceClick}
-                  onEditAvatar={handleEditAvatarClick}
-                  onCardClick={setSelectedCard}
-                  onCardLike={handleCardLike}
-                  onCardDelete={handleCardDelete}
-                  cards={cards}
-                />
-                <EditProfilePopup
-                  isOpen={isEditProfilePopupOpen}
-                  onClose={closeAllPopups}
-                  onUpdateUser={handleUpdateUser}
-                />
+            <ProtectedRouteElement loggedIn={isLoggedIn}>
+              <Header email={email} text={'Выйти'} />
 
-                <EditAvatarPopup
-                  isOpen={isEditAvatarPopupOpen}
-                  onClose={closeAllPopups}
-                  onUpdateAvatar={handleUpdateAvatar}
-                />
+              <Main
+                onEditProfile={handleEditProfileClick}
+                onAddPlace={handleAddPlaceClick}
+                onEditAvatar={handleEditAvatarClick}
+                onCardClick={setSelectedCard}
+                onCardLike={handleCardLike}
+                onCardDelete={handleCardDelete}
+                cards={cards}
+              />
 
-                <AddPlacePopup
-                  isOpen={isAddPlacePopupOpen}
-                  onClose={closeAllPopups}
-                  onAddPlace={handleAddPlaceSubmit}
-                />
+              <EditProfilePopup
+                isOpen={isEditProfilePopupOpen}
+                onClose={closeAllPopups}
+                onUpdateUser={handleUpdateUser}
+              />
 
-                <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+              <EditAvatarPopup
+                isOpen={isEditAvatarPopupOpen}
+                onClose={closeAllPopups}
+                onUpdateAvatar={handleUpdateAvatar}
+              />
 
-                <Footer />
-              </>
-            )
+              <AddPlacePopup
+                isOpen={isAddPlacePopupOpen}
+                onClose={closeAllPopups}
+                onAddPlace={handleAddPlaceSubmit}
+              />
+
+              <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+
+              <Footer />
+            </ProtectedRouteElement>
           }
         />
       </Routes>
