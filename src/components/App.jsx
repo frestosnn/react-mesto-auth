@@ -13,8 +13,8 @@ import ProtectedRouteElement from './ProtectedRoute';
 import { useEffect, useState } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.jsx';
 import { api } from '../utils/Api.js';
-import { Route, Routes, Navigate } from 'react-router-dom';
-import InfoTooltip from './InfoTooltip';
+import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import * as auth from '../utils/Auth.js';
 
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
@@ -27,8 +27,17 @@ function App() {
 
   const [isInfoTooltipPopupOpen, setInfoTooltipPopupOpen] = useState(false);
 
+  const [selectedCard, setSelectedCard] = useState({ name: '', link: '' });
+  const [email, setEmail] = useState('');
+
+  const navigate = useNavigate();
+
   const handleChangeInfoTooltipStatus = () => {
     setInfoTooltipPopupOpen(state => !state);
+  };
+
+  const handleLogin = () => {
+    setLoggenIn(true);
   };
 
   useEffect(() => {
@@ -42,7 +51,33 @@ function App() {
       });
   }, []);
 
-  const [selectedCard, setSelectedCard] = useState({ name: '', link: '' });
+  const tokenCheck = () => {
+    //если есть токен в LocalStorage
+    if (localStorage.getItem('jwt')) {
+      const jwt = localStorage.getItem('jwt');
+
+      if (jwt) {
+        //отправляем запрос на сервер
+        auth.getUser(jwt).then(res => {
+          if (res) {
+            //получили данные об email
+            const userData = {
+              email: res.data.email
+            };
+
+            //поменяли стейт
+            setLoggenIn(true);
+
+            //изменили email
+            setEmail(userData.email);
+
+            //отправили на страницу
+            navigate('/', { replace: true });
+          }
+        });
+      }
+    }
+  };
 
   const handleEditAvatarClick = () => {
     setEditAvatarPopupOpen(state => !state);
@@ -154,6 +189,10 @@ function App() {
       });
   };
 
+  useEffect(() => {
+    tokenCheck();
+  }, []);
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <Routes>
@@ -161,8 +200,13 @@ function App() {
           path="/sign-in"
           element={
             <>
-              <Header />
-              <Login />
+              <Header text={'Регистрация'} />
+              <Login
+                handleLogin={handleLogin}
+                onChangeStatus={handleChangeInfoTooltipStatus}
+                isOpen={isInfoTooltipPopupOpen}
+                onClose={closeAllPopups}
+              />
             </>
           }
         ></Route>
@@ -171,7 +215,7 @@ function App() {
           path="/sign-up"
           element={
             <>
-              <Header />
+              <Header text={'Войти'} />
               <Register
                 isOpen={isInfoTooltipPopupOpen}
                 onClose={closeAllPopups}
@@ -188,7 +232,7 @@ function App() {
               <Navigate to="/sign-in" replace />
             ) : (
               <>
-                <Header />
+                <Header email={email} text={'Выйти'} />
                 <Main
                   onEditProfile={handleEditProfileClick}
                   onAddPlace={handleAddPlaceClick}

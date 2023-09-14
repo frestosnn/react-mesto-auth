@@ -1,11 +1,10 @@
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import InfoTooltip from './InfoTooltip';
 import { useState } from 'react';
 import * as auth from '../utils/Auth.js';
 import signImagePath from '../images/sign-good.svg';
 
 function Register({ isOpen, onClose, onChangeStatus }) {
-  const navigate = useNavigate();
   const [formValue, setFormValue] = useState({
     email: '',
     password: ''
@@ -16,19 +15,15 @@ function Register({ isOpen, onClose, onChangeStatus }) {
 
     //деструктурируем стейт formValue
     const { email, password } = formValue;
-    console.log(password, email);
 
     //отправляем данные на сервер из formValue
     auth.register(email, password).then(res => {
       //если res существует
       if (res) {
-        //то меняем стейт попапа на true
+        //то меняем стейт попапа-подтверждения на true
         onChangeStatus();
       }
     });
-
-    /*//после регистрации направляем на страницу входа
-    navigate('/sign-in', { replace: true }); */
   };
 
   const handleChange = e => {
