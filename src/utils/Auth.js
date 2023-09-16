@@ -17,9 +17,6 @@ export const register = (email, password) => {
         return e;
       }
     })
-    .then(res => {
-      return res;
-    })
     .catch(err => console.log(err));
 };
 

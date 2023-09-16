@@ -13,10 +13,15 @@ import ProtectedRouteElement from './ProtectedRoute';
 import { useEffect, useState } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.jsx';
 import { api } from '../utils/Api.js';
-import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import * as auth from '../utils/Auth.js';
+import InfoTooltip from './InfoTooltip';
+import signGoodImagePath from '../images/sign-good.svg';
+import signBadImagePath from '../images/sign-bad.svg';
 
 function App() {
+  const navigate = useNavigate();
+
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
@@ -29,16 +34,7 @@ function App() {
 
   const [selectedCard, setSelectedCard] = useState({ name: '', link: '' });
   const [email, setEmail] = useState('');
-
-  const navigate = useNavigate();
-
-  const handleChangeInfoTooltipStatus = () => {
-    setInfoTooltipPopupOpen(state => !state);
-  };
-
-  const handleLogin = () => {
-    setLoggedIn(state => !state);
-  };
+  const [cards, setCards] = useState([]);
 
   useEffect(() => {
     api
@@ -49,46 +45,64 @@ function App() {
       .catch(err => {
         console.log(err);
       });
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    api
+      .getInitialCards()
+      .then(res => {
+        setCards(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    checkToken();
   }, []);
 
-  const tokenCheck = () => {
+  const checkToken = () => {
     //если есть токен в LocalStorage
-    if (localStorage.getItem('jwt')) {
-      const jwt = localStorage.getItem('jwt');
 
-      if (jwt) {
-        //отправляем запрос на сервер
-        auth.getUser(jwt).then(res => {
+    const jwt = localStorage.getItem('jwt');
+
+    if (jwt) {
+      //отправляем запрос на сервер
+      auth
+        .getUser(jwt)
+        .then(res => {
           if (res) {
-            //получили данные об email
-            const userData = {
-              email: res.data.email
-            };
-
             //поменяли стейт
             setLoggedIn(true);
 
             //изменили email
-            setEmail(userData.email);
+            setEmail(res.data.email);
 
             //отправили на страницу
             navigate('/', { replace: true });
           }
+        })
+        .catch(err => {
+          console.log(err);
         });
-      }
     }
   };
 
   const handleEditAvatarClick = () => {
-    setEditAvatarPopupOpen(state => !state);
+    setEditAvatarPopupOpen(true);
   };
 
   const handleEditProfileClick = () => {
-    setEditProfilePopupOpen(state => !state);
+    setEditProfilePopupOpen(true);
   };
 
   const handleAddPlaceClick = () => {
-    setAddPlacePopupOpen(state => !state);
+    setAddPlacePopupOpen(true);
+  };
+
+  const openInfoTooltip = () => {
+    setInfoTooltipPopupOpen(true);
   };
 
   const closeAllPopups = () => {
@@ -100,9 +114,9 @@ function App() {
   };
 
   //эта функция передается по ссылке onUpdateUser в EditProfilePopup
-  const handleUpdateUser = obj => {
+  const handleUpdateUser = profileData => {
     api
-      .editUserInfo(obj)
+      .editUserInfo(profileData)
       .then(res => {
         //обновляем  глобальный контекст
         setCurrentUser(res);
@@ -125,18 +139,10 @@ function App() {
       });
   };
 
-  const [cards, setCards] = useState([]);
-
-  useEffect(() => {
-    api
-      .getInitialCards()
-      .then(res => {
-        setCards(state => (state = res));
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }, []);
+  const handleLogin = email => {
+    setLoggedIn(state => !state);
+    setEmail(email);
+  };
 
   const handleCardDelete = cardId => {
     api
@@ -189,48 +195,47 @@ function App() {
       });
   };
 
-  useEffect(() => {
-    tokenCheck();
-  }, []);
-
   return (
     <CurrentUserContext.Provider value={currentUser}>
+      <Header email={email} />
+
       <Routes>
         <Route
           path="/sign-in"
           element={
             <>
-              <Header text={'Регистрация'} />
-              <Login
-                handleLogin={handleLogin}
-                onChangeStatus={handleChangeInfoTooltipStatus}
+              <Login handleLogin={handleLogin} onChangeStatus={openInfoTooltip} />
+
+              <InfoTooltip
                 isOpen={isInfoTooltipPopupOpen}
                 onClose={closeAllPopups}
+                text="Что-то пошло не так! Попробуйте еще раз."
+                src={signBadImagePath}
               />
             </>
           }
-        ></Route>
+        />
 
         <Route
           path="/sign-up"
           element={
             <>
-              <Header text={'Войти'} />
-              <Register
+              <Register onChangeStatus={openInfoTooltip} />
+
+              <InfoTooltip
                 isOpen={isInfoTooltipPopupOpen}
                 onClose={closeAllPopups}
-                onChangeStatus={handleChangeInfoTooltipStatus}
+                text="Вы успешно зарегистрировались!"
+                src={signGoodImagePath}
               />
             </>
           }
-        ></Route>
+        />
 
         <Route
           path="/"
           element={
             <ProtectedRouteElement loggedIn={isLoggedIn}>
-              <Header email={email} text={'Выйти'} />
-
               <Main
                 onEditProfile={handleEditProfileClick}
                 onAddPlace={handleAddPlaceClick}

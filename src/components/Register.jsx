@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom';
-import InfoTooltip from './InfoTooltip';
+
 import { useState } from 'react';
 import * as auth from '../utils/Auth.js';
-import signImagePath from '../images/sign-good.svg';
 
-function Register({ isOpen, onClose, onChangeStatus }) {
+function Register({ onChangeStatus }) {
   const [formValue, setFormValue] = useState({
     email: '',
     password: ''
@@ -17,13 +16,18 @@ function Register({ isOpen, onClose, onChangeStatus }) {
     const { email, password } = formValue;
 
     //отправляем данные на сервер из formValue
-    auth.register(email, password).then(res => {
-      //если res существует
-      if (res) {
-        //то меняем стейт попапа-подтверждения на true
-        onChangeStatus();
-      }
-    });
+    auth
+      .register(email, password)
+      .then(res => {
+        //если res существует
+        if (res) {
+          //то меняем стейт попапа-подтверждения на true
+          onChangeStatus();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   const handleChange = e => {
@@ -36,13 +40,6 @@ function Register({ isOpen, onClose, onChangeStatus }) {
 
   return (
     <>
-      <InfoTooltip
-        isOpen={isOpen}
-        onClose={onClose}
-        text="Вы успешно зарегистрировались!"
-        src={signImagePath}
-      />
-
       <div className="sign">
         <h2 className="sign__title">Регистрация</h2>
         <form onSubmit={handleSubmit} className="sign__form">
@@ -53,16 +50,16 @@ function Register({ isOpen, onClose, onChangeStatus }) {
             value={formValue.email}
             onChange={handleChange}
             name="email"
-          ></input>
+          />
 
           <input
-            type="text"
+            type="password"
             className="sign__input"
             placeholder="Пароль"
             value={formValue.password}
             onChange={handleChange}
             name="password"
-          ></input>
+          />
 
           <button className="sign__button">Зарегистрироваться</button>
         </form>

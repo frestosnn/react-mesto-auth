@@ -1,12 +1,6 @@
-import { useNavigate } from 'react-router-dom';
-
 function InfoTooltip({ isOpen, onClose, text, src }) {
-  const navigate = useNavigate();
-
   const handleCloseClick = () => {
     onClose();
-    //после закрытия направляем на страницу входа
-    navigate('/sign-in', { replace: true });
   };
 
   return (

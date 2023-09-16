@@ -1,33 +1,59 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, Route, Routes, useNavigate } from 'react-router-dom';
 import headerLogoPath from '../images/logo.svg';
-import { useState } from 'react';
 
-function Header({ email, text }) {
+function Header({ email }) {
   const navigate = useNavigate();
-  const [signedIn, setSignIn] = useState(false);
 
   const signOut = () => {
     localStorage.removeItem('jwt');
     navigate('/sign-in', { replace: true });
-
-    setSignIn(false);
-  };
-
-  const signUp = () => {
-    navigate('/sign-up', { replace: true });
-    setSignIn(true);
   };
 
   return (
-    <header className="header">
-      <img className="header__logo" src={headerLogoPath} alt="Логотип сервиса Место" />
-      <div className="header__container">
-        <p className="header__text">{email}</p>
-        <button onClick={signedIn ? signOut : signUp} className="header__link">
-          {text}
-        </button>
-      </div>
-    </header>
+    <>
+      <Routes>
+        <Route
+          path="/sign-in"
+          element={
+            <header className="header">
+              <img className="header__logo" src={headerLogoPath} alt="Логотип сервиса Место" />
+              <div className="header__container">
+                <Link to="/sign-up" className="header__link">
+                  Регистрация
+                </Link>
+              </div>
+            </header>
+          }
+        />
+        <Route
+          path="/sign-up"
+          element={
+            <header className="header">
+              <img className="header__logo" src={headerLogoPath} alt="Логотип сервиса Место" />
+              <div className="header__container">
+                <Link to="/sign-in" className="header__link">
+                  Войти
+                </Link>
+              </div>
+            </header>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <header className="header">
+              <img className="header__logo" src={headerLogoPath} alt="Логотип сервиса Место" />
+              <div className="header__container">
+                <p className="header__text">{email}</p>
+                <button onClick={signOut} className="header__link">
+                  Выйти
+                </button>
+              </div>
+            </header>
+          }
+        />
+      </Routes>
+    </>
   );
 }
 

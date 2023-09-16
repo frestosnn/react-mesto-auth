@@ -2,10 +2,10 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 const ProtectedRouteElement = ({ children, loggedIn }) => {
-  if (loggedIn === true) {
+  if (loggedIn) {
     return children;
   } else {
-    <Navigate to="/sign-up" replace />;
+    return <Navigate to="/sign-up" replace />;
   }
 };
 
