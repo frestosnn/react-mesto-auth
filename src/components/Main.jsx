@@ -11,16 +11,6 @@ function Main({
   onCardDelete,
   cards
 }) {
-  const handleMouseEnter = () => {
-    document.querySelector('.profile__avatar').style.opacity = '0.3';
-    document.querySelector('.profile__add-avatar').style.opacity = '1';
-  };
-
-  const handleMouseLeave = () => {
-    document.querySelector('.profile__avatar').style.opacity = '1';
-    document.querySelector('.profile__add-avatar').style.opacity = '0';
-  };
-
   const currentUserInfo = React.useContext(CurrentUserContext);
 
   return (
@@ -33,8 +23,6 @@ function Main({
         пользователя"
             onClick={onEditAvatar}
             src={currentUserInfo.avatar}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
           />
           <div className="profile__add-avatar"></div>
         </div>

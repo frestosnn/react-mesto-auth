@@ -14,3 +14,7 @@
     margin: 0 auto 26px;
   }
 }
+
+.profile__avatar:hover {
+  opacity: 0.3;
+}

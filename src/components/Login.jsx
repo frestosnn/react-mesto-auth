@@ -28,8 +28,6 @@ function Login({ handleLogin, onChangeStatus }) {
       .authorize(email, password)
       .then(res => {
         if (res) {
-          console.log(res);
-
           //вызываем функцию изменения состояния loggedIn
           handleLogin(email);
 

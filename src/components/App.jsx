@@ -13,7 +13,7 @@ import ProtectedRouteElement from './ProtectedRoute';
 import { useEffect, useState } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.jsx';
 import { api } from '../utils/Api.js';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import * as auth from '../utils/Auth.js';
 import InfoTooltip from './InfoTooltip';
 import signGoodImagePath from '../images/sign-good.svg';
@@ -197,7 +197,7 @@ function App() {
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <Header email={email} />
+      <Header email={email} handleLogin={handleLogin} />
 
       <Routes>
         <Route
@@ -220,7 +220,7 @@ function App() {
           path="/sign-up"
           element={
             <>
-              <Register onChangeStatus={openInfoTooltip} />
+              <Register onChangeStatus={openInfoTooltip} handleLogin={handleLogin} />
 
               <InfoTooltip
                 isOpen={isInfoTooltipPopupOpen}
@@ -269,6 +269,11 @@ function App() {
               <Footer />
             </ProtectedRouteElement>
           }
+        />
+
+        <Route
+          path="*"
+          element={isLoggedIn ? <Navigate to="/" replace /> : <Navigate to="/sign-in" replace />}
         />
       </Routes>
     </CurrentUserContext.Provider>

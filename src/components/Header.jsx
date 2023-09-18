@@ -1,12 +1,15 @@
 import { Link, Route, Routes, useNavigate } from 'react-router-dom';
 import headerLogoPath from '../images/logo.svg';
 
-function Header({ email }) {
+function Header({ email, handleLogin }) {
   const navigate = useNavigate();
 
   const signOut = () => {
     localStorage.removeItem('jwt');
+
     navigate('/sign-in', { replace: true });
+
+    handleLogin();
   };
 
   return (
@@ -45,9 +48,9 @@ function Header({ email }) {
               <img className="header__logo" src={headerLogoPath} alt="Логотип сервиса Место" />
               <div className="header__container">
                 <p className="header__text">{email}</p>
-                <button onClick={signOut} className="header__link">
+                <Link to="sign-in" onClick={signOut} className="header__link">
                   Выйти
-                </button>
+                </Link>
               </div>
             </header>
           }

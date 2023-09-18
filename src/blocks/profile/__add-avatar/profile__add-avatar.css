@@ -17,3 +17,7 @@
   background-position: center;
   background-repeat: no-repeat;
 }
+
+.profile__add-avatar:hover {
+  opacity: 1;
+}

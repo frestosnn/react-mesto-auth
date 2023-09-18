@@ -1,5 +1,14 @@
 export const BASE_URL = 'https://auth.nomoreparties.co';
 
+export const checkResponse = res => {
+  if (!res.ok) {
+    // если ошибка, отклоняем промис
+    return Promise.reject(`Ошибка: ${res.status}`);
+  } else {
+    return res.json();
+  }
+};
+
 export const register = (email, password) => {
   return fetch(`${BASE_URL}/signup`, {
     method: 'POST',
@@ -7,17 +16,7 @@ export const register = (email, password) => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({ password, email })
-  })
-    .then(res => {
-      try {
-        if (res.status === 201) {
-          return res.json();
-        }
-      } catch (e) {
-        return e;
-      }
-    })
-    .catch(err => console.log(err));
+  }).then(res => checkResponse(res));
 };
 
 export const authorize = (login, pass) => {
@@ -27,28 +26,13 @@ export const authorize = (login, pass) => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({ password: pass, email: login })
-  })
-    .then(res => {
-      try {
-        if (res.status === 200) {
-          return res.json();
-        }
-      } catch (e) {
-        return e;
-      }
-    })
-
-    .then(res => {
-      if (res.token) {
-        //сохраняем токен в LocalStorage
-        localStorage.setItem('jwt', res.token);
-        return res;
-      } else {
-        return;
-      }
-    })
-
-    .catch(err => console.log(err));
+  }).then(res => {
+    if (res.token) {
+      // Сохраняем токен в LocalStorage
+      localStorage.setItem('jwt', res.token);
+    }
+    return checkResponse(res); // Вызывайте checkResponse внутри .then()
+  });
 };
 
 export const getUser = token => {
@@ -57,10 +41,5 @@ export const getUser = token => {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`
     }
-  })
-    .then(res => res.json())
-    .then(res => {
-      console.log(res);
-      return res;
-    });
+  }).then(res => checkResponse(res));
 };

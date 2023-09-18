@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { useState } from 'react';
 import * as auth from '../utils/Auth.js';
 
-function Register({ onChangeStatus }) {
+function Register({ onChangeStatus, handleLogin }) {
+  const navigate = useNavigate();
   const [formValue, setFormValue] = useState({
     email: '',
     password: ''
@@ -23,6 +24,12 @@ function Register({ onChangeStatus }) {
         if (res) {
           //то меняем стейт попапа-подтверждения на true
           onChangeStatus();
+
+          //меняем стейт isLogged пользователя
+          handleLogin(email);
+
+          //направляем на главную страницу
+          navigate('/', { replace: true });
         }
       })
       .catch(err => {
