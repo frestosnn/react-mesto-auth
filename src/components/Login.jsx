@@ -35,13 +35,11 @@ function Login({ handleLogin, onChangeStatus }) {
           setFormValue({ email: '', password: '' });
 
           navigate('/', { replace: true });
-        } else {
-          //если токена нет, то открываем попап
-          onChangeStatus();
         }
       })
       .catch(err => {
         console.log(err);
+        onChangeStatus(false);
       });
   };
 

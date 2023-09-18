@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import * as auth from '../utils/Auth.js';
 
-function Register({ onChangeStatus, handleLogin }) {
+function Register({ onChangeStatus }) {
   const navigate = useNavigate();
   const [formValue, setFormValue] = useState({
     email: '',
@@ -23,17 +23,15 @@ function Register({ onChangeStatus, handleLogin }) {
         //если res существует
         if (res) {
           //то меняем стейт попапа-подтверждения на true
-          onChangeStatus();
-
-          //меняем стейт isLogged пользователя
-          handleLogin(email);
+          onChangeStatus(true);
 
           //направляем на главную страницу
-          navigate('/', { replace: true });
+          navigate('/sign-in', { replace: true });
         }
       })
       .catch(err => {
         console.log(err);
+        onChangeStatus(false);
       });
   };
 

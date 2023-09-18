@@ -36,6 +36,8 @@ function App() {
   const [email, setEmail] = useState('');
   const [cards, setCards] = useState([]);
 
+  const [isSuccessInfoTooltipStatus, setSuccessInfoTooltipStatus] = useState(Boolean);
+
   useEffect(() => {
     api
       .getUserInfo()
@@ -101,8 +103,9 @@ function App() {
     setAddPlacePopupOpen(true);
   };
 
-  const openInfoTooltip = () => {
+  const openInfoTooltip = isSuccess => {
     setInfoTooltipPopupOpen(true);
+    setSuccessInfoTooltipStatus(isSuccess);
   };
 
   const closeAllPopups = () => {
@@ -140,7 +143,7 @@ function App() {
   };
 
   const handleLogin = email => {
-    setLoggedIn(state => !state);
+    setLoggedIn(true);
     setEmail(email);
   };
 
@@ -195,41 +198,28 @@ function App() {
       });
   };
 
+  const signOut = () => {
+    localStorage.removeItem('jwt');
+
+    navigate('/sign-in', { replace: true });
+
+    setLoggedIn(false);
+    setEmail('');
+  };
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <Header email={email} handleLogin={handleLogin} />
+      <Header email={email} onSignOut={signOut} />
 
       <Routes>
         <Route
           path="/sign-in"
-          element={
-            <>
-              <Login handleLogin={handleLogin} onChangeStatus={openInfoTooltip} />
-
-              <InfoTooltip
-                isOpen={isInfoTooltipPopupOpen}
-                onClose={closeAllPopups}
-                text="Что-то пошло не так! Попробуйте еще раз."
-                src={signBadImagePath}
-              />
-            </>
-          }
+          element={<Login handleLogin={handleLogin} onChangeStatus={openInfoTooltip} />}
         />
 
         <Route
           path="/sign-up"
-          element={
-            <>
-              <Register onChangeStatus={openInfoTooltip} handleLogin={handleLogin} />
-
-              <InfoTooltip
-                isOpen={isInfoTooltipPopupOpen}
-                onClose={closeAllPopups}
-                text="Вы успешно зарегистрировались!"
-                src={signGoodImagePath}
-              />
-            </>
-          }
+          element={<Register onChangeStatus={openInfoTooltip} handleLogin={handleLogin} />}
         />
 
         <Route
@@ -276,6 +266,15 @@ function App() {
           element={isLoggedIn ? <Navigate to="/" replace /> : <Navigate to="/sign-in" replace />}
         />
       </Routes>
+
+      <InfoTooltip
+        isOpen={isInfoTooltipPopupOpen}
+        onClose={closeAllPopups}
+        text={
+          isSuccessInfoTooltipStatus ? 'Вы успешно!' : 'Что-то пошло не так, попробуйте еще раз'
+        }
+        src={isSuccessInfoTooltipStatus ? signGoodImagePath : signBadImagePath}
+      />
     </CurrentUserContext.Provider>
   );
 }

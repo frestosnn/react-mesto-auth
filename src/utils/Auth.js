@@ -26,13 +26,14 @@ export const authorize = (login, pass) => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({ password: pass, email: login })
-  }).then(res => {
-    if (res.token) {
-      // Сохраняем токен в LocalStorage
-      localStorage.setItem('jwt', res.token);
-    }
-    return checkResponse(res); // Вызывайте checkResponse внутри .then()
-  });
+  })
+    .then(res => checkResponse(res))
+    .then(res => {
+      if (res.token) {
+        // Сохраняем токен в LocalStorage
+        localStorage.setItem('jwt', res.token);
+      }
+    });
 };
 
 export const getUser = token => {
