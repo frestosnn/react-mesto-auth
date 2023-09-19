@@ -28,6 +28,9 @@ function Login({ handleLogin, onChangeStatus }) {
       .authorize(email, password)
       .then(res => {
         if (res) {
+          // Сохраняем токен в LocalStorage
+          localStorage.setItem('jwt', res.token);
+
           //вызываем функцию изменения состояния loggedIn
           handleLogin(email);
 

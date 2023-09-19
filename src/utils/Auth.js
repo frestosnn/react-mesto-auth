@@ -26,14 +26,7 @@ export const authorize = (login, pass) => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({ password: pass, email: login })
-  })
-    .then(res => checkResponse(res))
-    .then(res => {
-      if (res.token) {
-        // Сохраняем токен в LocalStorage
-        localStorage.setItem('jwt', res.token);
-      }
-    });
+  }).then(res => checkResponse(res));
 };
 
 export const getUser = token => {

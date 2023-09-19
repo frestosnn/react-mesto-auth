@@ -39,25 +39,29 @@ function App() {
   const [isSuccessInfoTooltipStatus, setSuccessInfoTooltipStatus] = useState(Boolean);
 
   useEffect(() => {
-    api
-      .getUserInfo()
-      .then(res => {
-        setCurrentUser(res);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    if (isLoggedIn) {
+      api
+        .getUserInfo()
+        .then(res => {
+          setCurrentUser(res);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   }, [isLoggedIn]);
 
   useEffect(() => {
-    api
-      .getInitialCards()
-      .then(res => {
-        setCards(res);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    if (isLoggedIn) {
+      api
+        .getInitialCards()
+        .then(res => {
+          setCards(res);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   }, [isLoggedIn]);
 
   useEffect(() => {
@@ -213,6 +217,11 @@ function App() {
 
       <Routes>
         <Route
+          path="/*"
+          element={isLoggedIn ? <Navigate to="/" replace /> : <Navigate to="/sign-in" replace />}
+        />
+
+        <Route
           path="/sign-in"
           element={<Login handleLogin={handleLogin} onChangeStatus={openInfoTooltip} />}
         />
@@ -260,18 +269,15 @@ function App() {
             </ProtectedRouteElement>
           }
         />
-
-        <Route
-          path="*"
-          element={isLoggedIn ? <Navigate to="/" replace /> : <Navigate to="/sign-in" replace />}
-        />
       </Routes>
 
       <InfoTooltip
         isOpen={isInfoTooltipPopupOpen}
         onClose={closeAllPopups}
         text={
-          isSuccessInfoTooltipStatus ? 'Вы успешно!' : 'Что-то пошло не так, попробуйте еще раз'
+          isSuccessInfoTooltipStatus
+            ? 'Вы успешно зарегистрировались!'
+            : 'Что-то пошло не так! Попробуйте еще раз'
         }
         src={isSuccessInfoTooltipStatus ? signGoodImagePath : signBadImagePath}
       />
