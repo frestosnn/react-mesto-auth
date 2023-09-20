@@ -36,7 +36,7 @@ function App() {
   const [email, setEmail] = useState('');
   const [cards, setCards] = useState([]);
 
-  const [isSuccessInfoTooltipStatus, setSuccessInfoTooltipStatus] = useState(Boolean);
+  const [isSuccessInfoTooltipStatus, setSuccessInfoTooltipStatus] = useState(false);
 
   useEffect(() => {
     if (isLoggedIn) {
