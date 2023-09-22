@@ -13,6 +13,7 @@
   color: #000000;
   vertical-align: top;
   margin-bottom: 5px;
+  z-index: 100;
 }
 
 .popup__input_type_error {
@@ -23,4 +24,8 @@
   .popup__input {
     width: 238px;
   }
+}
+
+.popup__input:hover {
+  pointer-events: auto;
 }

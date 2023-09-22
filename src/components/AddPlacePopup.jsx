@@ -1,31 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import PopupWithForm from './PopupWithForm';
+import { useForm } from 'react-hook-form';
 
 function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
-  const [name, setName] = useState('');
-  const [link, setLink] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm({ mode: 'onBlur' });
 
-  const changeName = e => {
-    setName(e.target.value);
+  const nameRegister = register('name', {
+    required: {
+      value: true,
+      message: 'Данное поле обязательно'
+    },
+    minLength: {
+      value: 2,
+      message: 'Минимальная длина имени 2 символа'
+    },
+    maxLength: {
+      value: 30,
+      message: 'Максимальная длина 30 символов'
+    }
+  });
+
+  const linkRegister = register('link', {
+    required: {
+      value: true,
+      message: 'Данное поле обязательно'
+    },
+    pattern: {
+      value: /^(ftp|http|https):\/\/[^ "]+$/,
+      message: 'Введите корректный URL-адрес'
+    }
+  });
+
+  const onSubmit = data => {
+    onAddPlace(data);
+    //сброс полей формы
+    reset();
   };
-
-  const changeLink = e => {
-    setLink(e.target.value);
-  };
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    onAddPlace({
-      name,
-      link
-    });
-  };
-
-  //очистка полей ввода при открытии попапа(в качестве зависимости isOpen - то есть, инпуты сбразываются при изменения стейта попапа)
-  useEffect(() => {
-    setName('');
-    setLink('');
-  }, [isOpen]);
 
   return (
     <PopupWithForm
@@ -34,32 +49,28 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
       name="add_photo"
       isOpen={isOpen}
       onClose={onClose}
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <input
         id="place-name-input"
-        className="popup__input popup__input_place-info_name"
-        name="name"
+        className={`popup__input ${errors.name ? 'popup__input_type_error' : ''}`}
         type="text"
-        required
         placeholder="Новое место"
-        minLength="2"
-        maxLength="30"
-        value={name}
-        onChange={changeName}
+        {...nameRegister}
       />
-      <span className="place-name-input-error popup__error"></span>
+      <span className="popup__error popup__error_visible">
+        {errors.name && errors.name.message}
+      </span>
+
       <input
         id="place-url-input"
-        className="popup__input popup__input_place-info_url"
-        name="link"
-        type="url"
-        required
+        className={`popup__input ${errors.link ? 'popup__input_type_error' : ''}`}
         placeholder="Ссылка на картинку"
-        value={link}
-        onChange={changeLink}
+        {...linkRegister}
       />
-      <span className="place-url-input-error popup__error"></span>
+      <span className="popup__error popup__error_visible">
+        {errors.link && errors.link.message}
+      </span>
     </PopupWithForm>
   );
 }

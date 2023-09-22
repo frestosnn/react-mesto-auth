@@ -1,20 +1,31 @@
 import React, { useEffect } from 'react';
 import PopupWithForm from './PopupWithForm';
+import { useForm } from 'react-hook-form';
 
 function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
-  const avatarRef = React.useRef();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm({ mode: 'onBlur' });
 
   //вызывается функция из App, которая делает запрос к Api и меняет аватар
-  const handleSubmit = e => {
-    e.preventDefault();
-    onUpdateAvatar({
-      avatar: avatarRef.current.value
-    });
+  const onSubmit = data => {
+    onUpdateAvatar(data);
+    reset();
   };
 
-  useEffect(() => {
-    avatarRef.current.value = '';
-  }, [isOpen]);
+  const avatarRegister = register('avatar', {
+    required: {
+      value: true,
+      message: 'Данное поле обязательно'
+    },
+    pattern: {
+      value: /^(ftp|http|https):\/\/[^ "]+$/,
+      message: 'Введите корректный URL-адрес'
+    }
+  });
 
   return (
     <PopupWithForm
@@ -24,18 +35,17 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
       isOpen={isOpen}
       onClose={onClose}
       //передается по ссылке и вызывается при нажатии кнопки
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <input
         id="avatar-url-input"
-        className="popup__input popup__input_avatar_url"
-        name="avatar"
-        type="url"
-        required
+        className={`popup__input ${errors.avatar ? 'popup__input_type_error' : ''}`}
         placeholder="Ссылка на аватар"
-        ref={avatarRef}
+        {...avatarRegister}
       />
-      <span className="avatar-url-input-error popup__error"></span>
+      <span className="popup__error popup__error_visible">
+        {errors.avatar && errors.avatar.message}
+      </span>
     </PopupWithForm>
   );
 }

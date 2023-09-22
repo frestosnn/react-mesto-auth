@@ -1,34 +1,57 @@
 import React, { useEffect, useState } from 'react';
 import PopupWithForm from './PopupWithForm.jsx';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.jsx';
+import { useForm } from 'react-hook-form';
 
 function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-
   const currentUserInfo = React.useContext(CurrentUserContext);
 
-  useEffect(() => {
-    setName(currentUserInfo.name);
-    setDescription(currentUserInfo.about);
-  }, [currentUserInfo, isOpen]);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    mode: 'onBlur',
+    defaultValues: {
+      name: currentUserInfo.name,
+      about: currentUserInfo.about
+    }
+  });
 
-  const handleChangeName = e => {
-    setName(e.target.value);
-  };
+  const nameRegister = register('name', {
+    required: {
+      value: true,
+      message: 'Данное поле обязательно'
+    },
+    minLength: {
+      value: 2,
+      message: 'Минимальная длина имени 2 символа'
+    },
+    maxLength: {
+      value: 40,
+      message: 'Максимальная длина 40 символов'
+    }
+  });
 
-  const handleChangeDescription = e => {
-    setDescription(e.target.value);
-  };
+  const jobRegister = register('about', {
+    required: {
+      value: true,
+      message: 'Данное поле обязательно'
+    },
+    minLength: {
+      value: 2,
+      message: 'Минимальная длина имени 2 символа'
+    },
+    maxLength: {
+      value: 200,
+      message: 'Максимальная длина 200 символов'
+    }
+  });
 
-  const handleSubmit = e => {
-    e.preventDefault();
-
-    //здесь вызывается функция handleUpdateUser из компонента App, где в качестве объекта передаются стейты из инпутов
-    onUpdateUser({
-      name: name,
-      about: description
-    });
+  //в этой функции data это данные из input
+  const onSubmit = data => {
+    //здесь вызывается функция handleUpdateUser из компонента App, в которой запрос происходит запрос на сервер
+    onUpdateUser(data);
   };
 
   return (
@@ -38,35 +61,30 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
       name="add_edit"
       isOpen={isOpen}
       onClose={onClose}
-      //дальше в качестве handleSubmit передается опять же функция из App handleUpdateUser, но уже с нашим объектом, и вызывается по клику на кпонку сохранить
-      onSubmit={handleSubmit}
+      //во встроенную функцию handleSubmit из библиотеки HookForm передается функция-колбэк, в которую посредством замыкания передается данные из инпутов
+      onSubmit={handleSubmit(onSubmit)}
     >
       <input
         id="user-name-input"
-        className="popup__input popup__input_user-info_name"
-        name="name"
+        className={`popup__input ${errors.name ? 'popup__input_type_error' : ''}`}
         type="text"
-        required
         placeholder="Имя"
-        minLength="2"
-        maxLength="40"
-        onChange={handleChangeName}
-        value={name || ''}
+        {...nameRegister}
       />
-      <span className="user-name-input-error popup__error"></span>
+      <span className="popup__error popup__error_visible">
+        {errors.name && errors.name.message}
+      </span>
+
       <input
         id="user-job-input"
-        className="popup__input popup__input_user-info_job"
-        name="about"
+        className={`popup__input ${errors.about ? 'popup__input_type_error' : ''}`}
         type="text"
-        required
         placeholder="Профессия"
-        minLength="2"
-        maxLength="200"
-        onChange={handleChangeDescription}
-        value={description || ''}
+        {...jobRegister}
       />
-      <span className="user-job-input-error popup__error"></span>
+      <span className="popup__error popup__error_visible">
+        {errors.about && errors.about.message}
+      </span>
     </PopupWithForm>
   );
 }
