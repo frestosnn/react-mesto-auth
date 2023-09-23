@@ -43,9 +43,7 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
         placeholder="Ссылка на аватар"
         {...avatarRegister}
       />
-      <span className="popup__error popup__error_visible">
-        {errors.avatar && errors.avatar.message}
-      </span>
+      <span className="popup__error">{errors.avatar && errors.avatar.message}</span>
     </PopupWithForm>
   );
 }

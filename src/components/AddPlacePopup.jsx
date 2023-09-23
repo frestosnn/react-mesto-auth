@@ -58,9 +58,7 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
         placeholder="Новое место"
         {...nameRegister}
       />
-      <span className="popup__error popup__error_visible">
-        {errors.name && errors.name.message}
-      </span>
+      <span className="popup__error">{errors.name && errors.name.message}</span>
 
       <input
         id="place-url-input"
@@ -68,9 +66,7 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
         placeholder="Ссылка на картинку"
         {...linkRegister}
       />
-      <span className="popup__error popup__error_visible">
-        {errors.link && errors.link.message}
-      </span>
+      <span className="popup__error">{errors.link && errors.link.message}</span>
     </PopupWithForm>
   );
 }

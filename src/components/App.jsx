@@ -92,6 +92,16 @@ function App() {
         .catch(err => {
           console.log(err);
         });
+
+      //дополнительный запрос для заполнения контекста
+      api
+        .getUserInfo()
+        .then(res => {
+          setCurrentUser(res);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   };
 

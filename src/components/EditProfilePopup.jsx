@@ -71,9 +71,7 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
         placeholder="Имя"
         {...nameRegister}
       />
-      <span className="popup__error popup__error_visible">
-        {errors.name && errors.name.message}
-      </span>
+      <span className="popup__error">{errors.name && errors.name.message}</span>
 
       <input
         id="user-job-input"
@@ -82,9 +80,7 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
         placeholder="Профессия"
         {...jobRegister}
       />
-      <span className="popup__error popup__error_visible">
-        {errors.about && errors.about.message}
-      </span>
+      <span className="popup__error">{errors.about && errors.about.message}</span>
     </PopupWithForm>
   );
 }
